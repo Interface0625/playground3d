@@ -341,6 +341,9 @@ var moveCallback = function(e){
 };
 
 var captureMouse = function(element){
+
+    // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
+
     element.addEventListener('click', function(){
 
         var havePointerLock =   'pointerLockElement' in document ||
