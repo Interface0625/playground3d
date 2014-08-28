@@ -144,32 +144,42 @@ var yPos = 0.4;
 var zPos = 0;
 
 var speed = 0;
+var strafe = 0;
 
 function handleKeys() {
-    if (currentlyPressedKeys[33]) {
+    if (currentlyPressedKeys[38]) {
         // Page Up
-        pitchRate = 0.1;
-    } else if (currentlyPressedKeys[34]) {
+        pitchRate = 0.041;
+    } else if (currentlyPressedKeys[40]) {
         // Page Down
-        pitchRate = -0.1;
+        pitchRate = -0.041;
     } else {
         pitchRate = 0;
     }
 
-    if (currentlyPressedKeys[37] || currentlyPressedKeys[65]) {
+    if (currentlyPressedKeys[37]) {
         // Left cursor key or A
         yawRate = 0.1;
-    } else if (currentlyPressedKeys[39] || currentlyPressedKeys[68]) {
+    } else if (currentlyPressedKeys[39]) {
         // Right cursor key or D
         yawRate = -0.1;
     } else {
         yawRate = 0;
     }
+    if(currentlyPressedKeys[65]){
+        // A
+        strafe = 0.003;
+    }else if(currentlyPressedKeys[68]){
+        // D
+        strafe = -0.003;
+    }else{
+        strafe = 0;
+    }
 
-    if (currentlyPressedKeys[38] || currentlyPressedKeys[87]) {
+    if (currentlyPressedKeys[87]) {
         // Up cursor key or W
         speed = 0.003;
-    } else if (currentlyPressedKeys[40] || currentlyPressedKeys[83]) {
+    } else if (currentlyPressedKeys[83]) {
         // Down cursor key
         speed = -0.003;
     } else {
@@ -270,9 +280,12 @@ function animate() {
     if (lastTime != 0) {
         var elapsed = timeNow - lastTime;
 
-        if (speed != 0) {
+        if (speed != 0 || strafe != 0) {
             xPos -= Math.sin(degToRad(yaw)) * speed * elapsed;
             zPos -= Math.cos(degToRad(yaw)) * speed * elapsed;
+
+            xPos -= Math.sin(degToRad(yaw+90)) * strafe * elapsed;
+            zPos -= Math.cos(degToRad(yaw+90)) * strafe * elapsed;
 
             joggingAngle += elapsed * 0.6; // 0.6 "fiddle factor" - makes it feel more realistic :-)
             yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4
