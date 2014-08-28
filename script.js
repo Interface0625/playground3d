@@ -147,6 +147,7 @@ var speed = 0;
 var strafe = 0;
 
 function handleKeys() {
+    /*
     if (currentlyPressedKeys[38]) {
         // Page Up
         pitchRate = 0.041;
@@ -166,6 +167,7 @@ function handleKeys() {
     } else {
         yawRate = 0;
     }
+    */
     if(currentlyPressedKeys[65]){
         // A
         strafe = 0.003;
@@ -291,8 +293,8 @@ function animate() {
             yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4
         }
 
-        yaw += yawRate * elapsed;
-        pitch += pitchRate * elapsed;
+        yaw += yawRate * elapsed; yawRate=0;
+        pitch += pitchRate * elapsed; pitchRate=0;
 
     }
     lastTime = timeNow;
@@ -328,10 +330,42 @@ function makeFullClient(e){
     e.height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);    
 }
 
+
+
+var moveCallback = function(e){
+    var X = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
+    var Y = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
+    console.log(X)
+    if(Y != 0){ pitchRate = 0.026 * Y * -1;}else{pitchRate=0;}
+    if(X != 0){ yawRate = 0.031 * X * -1;}else{yawRate=0;}
+};
+
+var captureMouse = function(element){
+    element.addEventListener('click', function(){
+
+        var havePointerLock =   'pointerLockElement' in document ||
+                                'mozPointerLockElement' in document ||
+                                'webkitPointerLockElement' in document;
+        element.requestPointerLock = element.requestPointerLock ||
+                                     element.mozRequestPointerLock ||
+                                     element.webkitRequestPointerLock;
+        element.requestPointerLock();
+
+        element.addEventListener("mousemove", moveCallback, false);
+
+    }, false);
+
+};
+
+
+
 function main() {
     var canvas = document.getElementById("canvas");
     makeFullClient(canvas);
-    
+    captureMouse(canvas);
+
+ 
+
     initGL(canvas);
     initShaders();
     initTexture();
