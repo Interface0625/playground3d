@@ -102,94 +102,10 @@ function initTexture() {
 }
 
 
-var mvMatrix = mat4.create();
-var mvMatrixStack = [];
-var pMatrix = mat4.create();
-
-function mvPushMatrix() {
-    var copy = mat4.create();
-    mat4.set(mvMatrix, copy);
-    mvMatrixStack.push(copy);
-}
-
-function mvPopMatrix() {
-    if (mvMatrixStack.length == 0) { throw "Invalid popMatrix!"; }
-    mvMatrix = mvMatrixStack.pop();
-}
-
-
 function setMatrixUniforms() {
-    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, pMatrix);
-    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, mvMatrix);
+    gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, Camera.perspectiveMatrix);
+    gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, Camera.viewMatrix);
 }
-
-
-function degToRad(degrees) {
-    return degrees * Math.PI / 180;
-}
-
-var currentlyPressedKeys = {};
-function handleKeyDown(event) { currentlyPressedKeys[event.keyCode] = true; }
-function handleKeyUp(event) { currentlyPressedKeys[event.keyCode] = false; }
-
-
-var pitch = 0;
-var pitchRate = 0;
-
-var yaw = 0;
-var yawRate = 0;
-
-var xPos = 0;
-var yPos = 0.4;
-var zPos = 0;
-
-var speed = 0;
-var strafe = 0;
-
-function handleKeys() {
-    /*
-    if (currentlyPressedKeys[38]) {
-        // Page Up
-        pitchRate = 0.041;
-    } else if (currentlyPressedKeys[40]) {
-        // Page Down
-        pitchRate = -0.041;
-    } else {
-        pitchRate = 0;
-    }
-
-    if (currentlyPressedKeys[37]) {
-        // Left cursor key or A
-        yawRate = 0.1;
-    } else if (currentlyPressedKeys[39]) {
-        // Right cursor key or D
-        yawRate = -0.1;
-    } else {
-        yawRate = 0;
-    }
-    */
-    if(currentlyPressedKeys[65]){
-        // A
-        strafe = 0.003;
-    }else if(currentlyPressedKeys[68]){
-        // D
-        strafe = -0.003;
-    }else{
-        strafe = 0;
-    }
-
-    if (currentlyPressedKeys[87]) {
-        // Up cursor key or W
-        speed = 0.003;
-    } else if (currentlyPressedKeys[83]) {
-        // Down cursor key
-        speed = -0.003;
-    } else {
-        speed = 0;
-    }
-
-}
-
 
 var worldVertexPositionBuffer = null;
 var worldVertexTextureCoordBuffer = null;
@@ -250,14 +166,6 @@ function drawScene() {
         return;
     }
 
-    mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, pMatrix);
-
-    mat4.identity(mvMatrix);
-
-    mat4.rotate(mvMatrix, degToRad(-pitch), [1, 0, 0]);
-    mat4.rotate(mvMatrix, degToRad(-yaw), [0, 1, 0]);
-    mat4.translate(mvMatrix, [-xPos, -yPos, -zPos]);
-
     gl.activeTexture(gl.TEXTURE0);
     gl.bindTexture(gl.TEXTURE_2D, crateTexture);
     gl.uniform1i(shaderProgram.samplerUniform, 0);
@@ -274,38 +182,19 @@ function drawScene() {
 
 
 var lastTime = 0;
-// Used to make us "jog" up and down as we move forward.
-var joggingAngle = 0;
-
-function animate() {
+function update() {
     var timeNow = new Date().getTime();
     if (lastTime != 0) {
         var elapsed = timeNow - lastTime;
-
-        if (speed != 0 || strafe != 0) {
-            xPos -= Math.sin(degToRad(yaw)) * speed * elapsed;
-            zPos -= Math.cos(degToRad(yaw)) * speed * elapsed;
-
-            xPos -= Math.sin(degToRad(yaw+90)) * strafe * elapsed;
-            zPos -= Math.cos(degToRad(yaw+90)) * strafe * elapsed;
-
-            joggingAngle += elapsed * 0.6; // 0.6 "fiddle factor" - makes it feel more realistic :-)
-            yPos = Math.sin(degToRad(joggingAngle)) / 20 + 0.4
-        }
-
-        yaw += yawRate * elapsed; yawRate=0;
-        pitch += pitchRate * elapsed; pitchRate=0;
-
+        Camera.update(elapsed);
     }
     lastTime = timeNow;
 }
 
-
 function tick() {
     requestAnimFrame(tick);
-    handleKeys();
+    update();
     drawScene();
-    animate();
 }
 
 function makeFullScreen(e){
@@ -331,54 +220,20 @@ function makeFullClient(e){
 }
 
 
-
-var moveCallback = function(e){
-    var X = e.movementX || e.mozMovementX || e.webkitMovementX || 0;
-    var Y = e.movementY || e.mozMovementY || e.webkitMovementY || 0;
-    console.log(X)
-    if(Y != 0){ pitchRate = 0.026 * Y * -1;}else{pitchRate=0;}
-    if(X != 0){ yawRate = 0.031 * X * -1;}else{yawRate=0;}
-};
-
-var captureMouse = function(element){
-
-    // http://www.html5rocks.com/en/tutorials/pointerlock/intro/
-
-    element.addEventListener('click', function(){
-
-        var havePointerLock =   'pointerLockElement' in document ||
-                                'mozPointerLockElement' in document ||
-                                'webkitPointerLockElement' in document;
-        element.requestPointerLock = element.requestPointerLock ||
-                                     element.mozRequestPointerLock ||
-                                     element.webkitRequestPointerLock;
-        element.requestPointerLock();
-
-        element.addEventListener("mousemove", moveCallback, false);
-
-    }, false);
-
-};
-
-
-
 function main() {
     var canvas = document.getElementById("canvas");
     makeFullClient(canvas);
-    captureMouse(canvas);
-
- 
 
     initGL(canvas);
     initShaders();
     initTexture();
     loadWorld();
 
+    Camera.init(canvas);
+
+
     gl.clearColor(0.0, 0.0, 0.0, 1.0);
     gl.enable(gl.DEPTH_TEST);
-
-    document.onkeydown = handleKeyDown;
-    document.onkeyup = handleKeyUp;
 
     tick();
 }
