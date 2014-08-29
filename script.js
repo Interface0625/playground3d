@@ -98,7 +98,7 @@ function initTexture() {
         handleLoadedTexture(crateTexture)
     }
 
-    crateTexture.image.src = "crate.gif";
+    crateTexture.image.src = "res/images/crate.gif";
 }
 
 
