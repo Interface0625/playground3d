@@ -5,21 +5,33 @@ function degToRad(degrees) {
 var Camera = {
     gl: null,
     canvas: null,
-    pitchRate: 0,
-    yawRate: 0,
+
     pitch: 0,
     yaw: 0,
+    
+    pitchRate: 0,
+    yawRate: 0,
     pitchSpeed: 0.026,
     yawSpeed: 0.031,
+
     strafeSpeed: 0,
     speed: 0,
-    UpDown: 0,
+    UpDownSpeed: 0,
     movementSpeed: 0.003,
+
+    togleFreeFly: false,
+
     joggingAngle: 0,
+
     perspectiveMatrix: mat4.create(),
     viewMatrix: mat4.create(),
+
     isKeyPressed: {},
-    position: {X:0,Y:0.5,Z:0},
+    position: {
+    	X:0,
+    	Y:0.5,
+    	Z:0
+    },
     mouse: {
         isCaptured: false,
         deltaX: 0,
@@ -76,6 +88,10 @@ var Camera = {
         }
     },
     keyboardWalk: function(){
+    	if (Camera.isKeyPressed[70]) { // F
+    		Camera.togleFreeFly = !Camera.togleFreeFly;
+    	}
+
         if (Camera.isKeyPressed[87]) { // W
             Camera.speed = -Camera.movementSpeed;
         } else if (Camera.isKeyPressed[83]) { // S
@@ -85,7 +101,6 @@ var Camera = {
         }
 
         if(Camera.isKeyPressed[65]){ // A
-                   console.log("A");
             Camera.strafeSpeed = -Camera.movementSpeed;
         }else if(Camera.isKeyPressed[68]){ // D
             Camera.strafeSpeed = Camera.movementSpeed;
@@ -94,24 +109,32 @@ var Camera = {
         }
 
         if(Camera.isKeyPressed[16]){ // ctrl
-            Camera.UpDown = -Camera.movementSpeed;
+            Camera.UpDownSpeed = -Camera.movementSpeed;
         }else if(Camera.isKeyPressed[32]){ // Space
-            Camera.UpDown = Camera.movementSpeed;
+            Camera.UpDownSpeed = Camera.movementSpeed;
 
         }else{ 
-            Camera.UpDown = 0; 
+            Camera.UpDownSpeed = 0; 
         }
     },
     updateCamera: function(elapsed){
-        Camera.updatePlaneWalk(elapsed);
-
+    	if (Camera.togleFreeFly) {
+        	Camera.updateFreeFly(elapsed);
+    	}else{
+        	Camera.updatePlaneWalk(elapsed);
+    	}
     },
     updatePlaneWalk: function(elapsed){
-        if (Camera.speed != 0 || Camera.strafeSpeed != 0 || Camera.UpDown != 0) {
+        if (Camera.speed != 0 || Camera.strafeSpeed != 0 || Camera.UpDownSpeed != 0) {
+            // foreward/backward
             Camera.position.X += Math.sin(degToRad(Camera.yaw)) * Camera.speed * elapsed;
             Camera.position.Z += Math.cos(degToRad(Camera.yaw)) * Camera.speed * elapsed;
+            
+            // strafe
             Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed;
             Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed;
+            
+            // Height control
             Camera.joggingAngle += elapsed * 0.6; // 0.6 "fiddle factor" ­ makes it feel more realistic :­)
             Camera.position.Y = Math.sin(degToRad(Camera.joggingAngle)) / 20 + 0.4;
         }
@@ -119,7 +142,6 @@ var Camera = {
 
         Camera.yaw += Camera.yawRate * elapsed;
         Camera.pitch += Camera.pitchRate * elapsed;
-        
         Camera.yawRate = 0;
         Camera.pitchRate = 0;
 
@@ -130,7 +152,34 @@ var Camera = {
         mat4.rotate     (Camera.viewMatrix,  degToRad(-Camera.pitch), [1, 0, 0]);
         mat4.rotate     (Camera.viewMatrix, degToRad(-Camera.yaw), [0, 1, 0]);
         mat4.translate  (Camera.viewMatrix, [-Camera.position.X, -Camera.position.Y, -Camera.position.Z]);
+    },
+    updateFreeFly: function(elapsed){
+        if (Camera.speed != 0 || Camera.strafeSpeed != 0 || Camera.UpDownSpeed != 0) {
+            // foreward/backward
+            Camera.position.X += Math.sin(degToRad(Camera.yaw)) * Camera.speed * elapsed;
+            Camera.position.Z += Math.cos(degToRad(Camera.yaw)) * Camera.speed * elapsed;
+            
+            // strafe
+            Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed;
+            Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed;
+            
+            // Height control
+            Camera.position.Y += Math.sin(degToRad(-Camera.pitch)) * Camera.speed * elapsed;;
+        }
 
+
+        Camera.yaw += Camera.yawRate * elapsed;
+        Camera.pitch += Camera.pitchRate * elapsed;
+        Camera.yawRate = 0;
+        Camera.pitchRate = 0;
+
+        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, Camera.perspectiveMatrix);
+
+        mat4.identity   (Camera.viewMatrix);
+
+        mat4.rotate     (Camera.viewMatrix,  degToRad(-Camera.pitch), [1, 0, 0]);
+        mat4.rotate     (Camera.viewMatrix, degToRad(-Camera.yaw), [0, 1, 0]);
+        mat4.translate  (Camera.viewMatrix, [-Camera.position.X, -Camera.position.Y, -Camera.position.Z]);
     },
     update: function (elapsed) {
         if (Camera.mouse.isCaptured){

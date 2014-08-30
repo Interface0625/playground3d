@@ -147,7 +147,7 @@ function handleLoadedWorld(data) {
 
 function loadWorld() {
     var request = new XMLHttpRequest();
-    request.open("GET", "world.txt");
+    request.open("GET", "res/models/world.txt");
     request.onreadystatechange = function () {
         if (request.readyState == 4) {
             handleLoadedWorld(request.responseText);
