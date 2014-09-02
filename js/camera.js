@@ -15,7 +15,9 @@ var Camera = {
     UpDownSpeed: 0,
     movementSpeed: 0.003,
 
-    togleFreeFly: false,
+    speedMod: 1,
+
+    togleFreeFly: true,
 
     joggingAngle: 0,
 
@@ -104,13 +106,19 @@ var Camera = {
             Camera.strafeSpeed = 0; 
         }
 
-        if(Camera.isKeyPressed[16]){ // ctrl
+        if(Camera.isKeyPressed[15]){ // ctrl
             Camera.UpDownSpeed = -Camera.movementSpeed;
         }else if(Camera.isKeyPressed[32]){ // Space
             Camera.UpDownSpeed = Camera.movementSpeed;
 
         }else{ 
             Camera.UpDownSpeed = 0; 
+        }
+
+        if(Camera.isKeyPressed[16]){
+            Camera.speedMod = 3;
+        }else{
+            Camera.speedMod = 1;
         }
     },
     updateCamera: function(elapsed){
@@ -150,17 +158,18 @@ var Camera = {
         mat4.translate  (Camera.viewMatrix, [-Camera.position.X, -Camera.position.Y, -Camera.position.Z]);
     },
     updateFreeFly: function(elapsed){
+
         if (Camera.speed != 0 || Camera.strafeSpeed != 0 || Camera.UpDownSpeed != 0) {
             // foreward/backward
-            Camera.position.X += Math.sin(degToRad(Camera.yaw)) * Camera.speed * elapsed;
-            Camera.position.Z += Math.cos(degToRad(Camera.yaw)) * Camera.speed * elapsed;
+            Camera.position.X += Math.sin(degToRad(Camera.yaw)) * Camera.speed * elapsed * Camera.speedMod;
+            Camera.position.Z += Math.cos(degToRad(Camera.yaw)) * Camera.speed * elapsed * Camera.speedMod;
             
             // strafe
-            Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed;
-            Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed;
+            Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
+            Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
             
             // Height control
-            Camera.position.Y += Math.sin(degToRad(-Camera.pitch)) * Camera.speed * elapsed;;
+            Camera.position.Y += Math.sin(degToRad(-Camera.pitch)) * Camera.speed * elapsed * Camera.speedMod;
         }
 
 
