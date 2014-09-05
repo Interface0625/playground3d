@@ -4,29 +4,9 @@
         <script type="text/javascript" src="js/glMatrix.min.js"></script>
         <script type="text/javascript" src="js/webgl-utils.js"></script>
         <script type="text/javascript" src="js/utils.js"></script>
-        <script id="shader-fs" type="x-shader/x-fragment">
-            precision mediump float;
-            varying vec2 vTextureCoord;
-            uniform sampler2D uSampler;
-            void main(void) {
-                gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));
-            }
-        </script>
-        <script id="shader-vs" type="x-shader/x-vertex">
-            attribute vec3 aVertexPosition;
-            attribute vec2 aTextureCoord;
-            uniform mat4 uMVMatrix;
-            uniform mat4 uPMatrix;
-            varying vec2 vTextureCoord;
-            void main(void) {
-                gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);
-                vTextureCoord = aTextureCoord;
-            }
-        </script>
-
+        <script type="text/javascript" src="js/shaders.js"></script>
         <script type="text/javascript" src="js/camera.js"></script>
         <script type="text/javascript" src="js/world.js"></script>
-        <script type="text/javascript" src="js/model.js"></script>
 
         <script type="text/javascript" src="js/script.js"></script>
     </head>

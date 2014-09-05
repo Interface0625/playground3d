@@ -1,48 +1,48 @@
 WebGLUtils = function() {
-var GET_A_WEBGL_BROWSER = 'FAIL';
-var OTHER_PROBLEM = 'FAIL'
-var setupWebGL = function(canvas, opt_attribs, opt_onError) {
-  function handleCreationError(msg) {
-    var container = canvas.parentNode;
-    if (container) {
-      container.innerHTML = "FAIL";
+  var GET_A_WEBGL_BROWSER = 'FAIL';
+  var OTHER_PROBLEM = 'FAIL'
+  var setupWebGL = function(canvas, opt_attribs, opt_onError) {
+    function handleCreationError(msg) {
+      var container = canvas.parentNode;
+      if (container) {
+        container.innerHTML = "FAIL";
+      }
+    };
+
+    opt_onError = opt_onError || handleCreationError;
+
+    if (canvas.addEventListener) {
+      canvas.addEventListener("webglcontextcreationerror", function(event) {
+            opt_onError(event.statusMessage);
+          }, false);
     }
+    var context = create3DContext(canvas, opt_attribs);
+    if (!context) {
+      if (!window.WebGLRenderingContext) {
+        opt_onError("");
+      }
+    }
+    return context;
   };
 
-  opt_onError = opt_onError || handleCreationError;
-
-  if (canvas.addEventListener) {
-    canvas.addEventListener("webglcontextcreationerror", function(event) {
-          opt_onError(event.statusMessage);
-        }, false);
-  }
-  var context = create3DContext(canvas, opt_attribs);
-  if (!context) {
-    if (!window.WebGLRenderingContext) {
-      opt_onError("");
+  var create3DContext = function(canvas, opt_attribs) {
+    var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
+    var context = null;
+    for (var ii = 0; ii < names.length; ++ii) {
+      try {
+        context = canvas.getContext(names[ii], opt_attribs);
+      } catch(e) {}
+      if (context) {
+        break;
+      }
     }
+    return context;
   }
-  return context;
-};
 
-var create3DContext = function(canvas, opt_attribs) {
-  var names = ["webgl", "experimental-webgl", "webkit-3d", "moz-webgl"];
-  var context = null;
-  for (var ii = 0; ii < names.length; ++ii) {
-    try {
-      context = canvas.getContext(names[ii], opt_attribs);
-    } catch(e) {}
-    if (context) {
-      break;
-    }
-  }
-  return context;
-}
-
-return {
-  create3DContext: create3DContext,
-  setupWebGL: setupWebGL
-};
+  return {
+    create3DContext: create3DContext,
+    setupWebGL: setupWebGL
+  };
 }();
 
 window.requestAnimFrame = (function() {
@@ -56,3 +56,14 @@ window.requestAnimFrame = (function() {
          };
 })();
 
+function initGL(canvas) {
+    try {
+        gl = canvas.getContext("experimental-webgl");
+        gl.viewportWidth = canvas.width;
+        gl.viewportHeight = canvas.height;
+    } catch (e) {
+    }
+    if (!gl) {
+        alert("Could not initialise WebGL, sorry :-(");
+    }
+}

@@ -1,13 +1,36 @@
+
+
+
 var World = {
     vertexPositions: null,
     vertexTextureCoords: null,
     vertexPositionBuffer: null,
     vertexTextureCoordBuffer: null,
+    texture: null,
 
     init: function(){
+        this.initTexture();
         this.loadWorld();
     },
 
+    initTexture: function () {
+        this.texture = gl.createTexture();
+        this.texture.image = new Image();
+        var t = this.texture;
+        this.texture.image.onload = function () {
+            World.handleLoadedTexture(t);
+        }
+        this.texture.image.src = "res/images/floor.jpg";
+    },
+    handleLoadedTexture: function (texture) {
+        gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    },
     initBuffers: function (data) {
         var lines = data.split("\n");
         var vertexCount = 0;
@@ -43,7 +66,14 @@ var World = {
     },
 
     loadWorld: function () {
-        this.initBuffers("-3.0  0.0 -3.0 0.0 6.0\n-3.0  0.0  3.0 0.0 0.0\n3.0  0.0  3.0 6.0 0.0\n-3.0  0.0 -3.0 0.0 6.0\n3.0  0.0 -3.0 6.0 6.0\n3.0  0.0  3.0 6.0 0.0");
+        var model_definition = "";
+        model_definition += "-3.0  0.0 -3.0 0.0 6.0\n";
+        model_definition += "-3.0  0.0  3.0 0.0 0.0\n";
+        model_definition += " 3.0  0.0  3.0 6.0 0.0\n";
+        model_definition += "-3.0  0.0 -3.0 0.0 6.0\n";
+        model_definition += " 3.0  0.0 -3.0 6.0 6.0\n";
+        model_definition += " 3.0  0.0  3.0 6.0 0.0";
+        this.initBuffers(model_definition);
     },
 
     draw: function (gl, camera) {
@@ -51,29 +81,26 @@ var World = {
             return;
         }
 
-        // gl.activeTexture(gl.TEXTURE0);
-        // gl.bindTexture(gl.TEXTURE_2D, crateTexture);
-        // gl.uniform1i(shaderProgram.samplerUniform, 0);
+        // TEXTURE:
+        gl.activeTexture(gl.TEXTURE0);
+        gl.bindTexture(gl.TEXTURE_2D, this.texture);
+        gl.uniform1i(shaderProgram.samplerUniform, 0);
 
+        // TEXTURE COORD:
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
         gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
+        // POSITION COORD:
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
-
-        var view = null;
-        if (false){
-            view = mat4.create();
-            mat4.identity   (view);
-            mat4.rotate     (view,  degToRad(-90), [1, 0, 0]);
-            mat4.translate  (view, [0, 1, 0]);
-        }else{
-            view = camera.viewMatrix;
-        }
-        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, camera.perspectiveMatrix);
+        // CAMERA SETUP:
+        var perspective = camera.perspectiveMatrix;
+        var view = camera.viewMatrix;
+        gl.uniformMatrix4fv(shaderProgram.pMatrixUniform, false, perspective);
         gl.uniformMatrix4fv(shaderProgram.mvMatrixUniform, false, view);
 
+        // DRAW:
         gl.drawArrays(gl.TRIANGLES, 0, this.vertexPositionBuffer.numItems);
     }
 

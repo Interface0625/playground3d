@@ -34,3 +34,10 @@ function include(url){
    head.appendChild(element);
  }
 }
+function makeFullClient(e){
+    e.style.position = "fixed";
+    e.style.top = 0 + "px";
+    e.style.left = 0 + "px";
+    e.width = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    e.height = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);    
+}
