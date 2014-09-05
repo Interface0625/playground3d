@@ -22,6 +22,9 @@ function draw() {
 
     // DRAW:
     World.draw(gl, Camera);
+    for(var i =0; i< 256; i++){
+        Quad2d.draw(Camera);
+    }
 }
 
 function main() {
@@ -34,6 +37,8 @@ function main() {
     Camera.init(canvas);
 
     World.init(gl);
+    Quad2d.init(gl);
+
 
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
     gl.enable(gl.DEPTH_TEST);

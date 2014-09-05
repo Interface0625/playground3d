@@ -92,10 +92,12 @@ var World = {
 
         // TEXTURE COORD:
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexTextureCoordBuffer);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.vertexTextureCoords));
         gl.vertexAttribPointer(shaderProgram.textureCoordAttribute, this.vertexTextureCoordBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         // POSITION COORD:
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexPositionBuffer);
+        gl.bufferSubData(gl.ARRAY_BUFFER, 0, new Float32Array(this.vertexPositions));
         gl.vertexAttribPointer(shaderProgram.vertexPositionAttribute, this.vertexPositionBuffer.itemSize, gl.FLOAT, false, 0, 0);
 
         // CAMERA SETUP:
