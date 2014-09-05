@@ -2,13 +2,15 @@
 
 
 var World = {
+    gl: null,
     vertexPositions: null,
     vertexTextureCoords: null,
     vertexPositionBuffer: null,
     vertexTextureCoordBuffer: null,
     texture: null,
 
-    init: function(){
+    init: function(gl){
+        this.gl = gl;
         this.initTexture();
         this.loadWorld();
     },
@@ -17,12 +19,14 @@ var World = {
         this.texture = gl.createTexture();
         this.texture.image = new Image();
         var t = this.texture;
+        var self = this;
         this.texture.image.onload = function () {
-            World.handleLoadedTexture(t);
+            self.handleLoadedTexture(self, t);
         }
         this.texture.image.src = "res/images/floor.jpg";
     },
-    handleLoadedTexture: function (texture) {
+    handleLoadedTexture: function (sender, texture) {
+        var gl = sender.gl;
         gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
         gl.bindTexture(gl.TEXTURE_2D, texture);
         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, texture.image);

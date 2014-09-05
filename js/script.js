@@ -33,7 +33,7 @@ function main() {
     
     Camera.init(canvas);
 
-    World.init();
+    World.init(gl);
 
     gl.clearColor(0.3, 0.3, 0.3, 1.0);
     gl.enable(gl.DEPTH_TEST);
