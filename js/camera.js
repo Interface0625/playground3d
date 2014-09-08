@@ -175,6 +175,11 @@ var Camera = {
 
         Camera.yaw += Camera.yawRate * elapsed;
         Camera.pitch += Camera.pitchRate * elapsed;
+        if(Camera.pitch > 85){ 
+            Camera.pitch = 85; 
+        }else if(Camera.pitch < -85){
+            Camera.pitch = -85;
+        }
         Camera.yawRate = 0;
         Camera.pitchRate = 0;
 
