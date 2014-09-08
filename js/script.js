@@ -22,9 +22,22 @@ function draw() {
 
     // DRAW:
     World.draw(gl, Camera);
-    for(var i =0; i< 256; i++){
+
+
+
+
+    // TEXTURE:
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, gContentManager.getImage("@uvgrid1024.jpg"));
+    gl.uniform1i(shaderProgram.samplerUniform, 0);
+    //for(var i = 0; i < 16; i++){
+    Mesh.draw(gl);
+    //}
+
+
+    /*for(var i =0; i< 256; i++){
         Quad2d.draw(Camera);
-    }
+    }*/
 }
 
 function main() {
@@ -32,6 +45,10 @@ function main() {
     makeFullClient(canvas);
 
     initGL(canvas);
+    gContentManager.init(gl);
+    //return;
+
+
     initShaders(gl);
     
     Camera.init(canvas);
