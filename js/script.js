@@ -42,7 +42,7 @@ function draw() {
 
 function main() {
     var canvas = document.getElementById("canvas");
-    makeFullClient(canvas);
+//    makeFullClient(canvas);
 
     initGL(canvas);
     gContentManager.init(gl);

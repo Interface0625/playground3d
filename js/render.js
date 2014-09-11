@@ -22,7 +22,7 @@ Render{
 	draw_arrays_color: function(positions, colors){},
 	draw_arrays_texture: function(positions, textureUVs){},
 
-	// By Buffers:
+	// By GL Buffers:
 	draw_VertexColorBuffer: function(positions, colors, indices){},
 	draw_VertexTextureBuffer: function(positions, textureUVs, indices){},
 	

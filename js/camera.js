@@ -37,7 +37,7 @@ var Camera = {
     },
     init: function (canvas) {
         this.canvas = canvas;
-        this.gl = canvas.getContext("experimental­webgl");
+        // this.gl = canvas.getContext("experimental­webgl");
         // Hook Events
         document.onkeydown = function(event) { Camera.isKeyPressed[event.keyCode] = true; };
         document.onkeyup = function(event) { Camera.isKeyPressed[event.keyCode] = false; };
@@ -46,6 +46,8 @@ var Camera = {
         document.addEventListener('pointerlockchange', Camera.mouseLockChange, false);
         document.addEventListener('mozpointerlockchange', Camera.mouseLockChange, false);
         document.addEventListener('webkitpointerlockchange', Camera.mouseLockChange, false);
+        mat4.perspective(45, canvas.clientWidth / canvas.clientHeight, 0.1, 100.0, Camera.perspectiveMatrix);
+        
         Camera.updateCamera(0);
     },
     mouseClick: function(e){
@@ -165,8 +167,8 @@ var Camera = {
             Camera.position.Z += Math.cos(degToRad(Camera.yaw)) * Camera.speed * elapsed * Camera.speedMod;
             
             // strafe
-            Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
-            Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
+            //Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
+            //Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
             
             // Height control
             Camera.position.Y += Math.sin(degToRad(-Camera.pitch)) * Camera.speed * elapsed * Camera.speedMod;
@@ -183,7 +185,7 @@ var Camera = {
         Camera.yawRate = 0;
         Camera.pitchRate = 0;
 
-        mat4.perspective(45, gl.viewportWidth / gl.viewportHeight, 0.1, 100.0, Camera.perspectiveMatrix);
+        mat4.perspective(45, this.canvas.clientWidth / this.canvas.clientHeight, 0.1, 100.0, Camera.perspectiveMatrix);
 
         mat4.identity   (Camera.viewMatrix);
 
