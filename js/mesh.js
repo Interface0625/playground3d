@@ -66,6 +66,11 @@ var Mesh = {
 		}
 	},
 	draw: function (gl) {
+    	// TEXTURE:
+		gl.activeTexture(gl.TEXTURE0);
+		gl.bindTexture(gl.TEXTURE_2D, gContentManager.getImage("@metal.jpg"));
+		gl.uniform1i(shaderProgram.samplerUniform, 0);
+
         if (this.vertexTextureCoordBuffer == null || 
         	this.vertexPositionBuffer == null) {
             return;
@@ -81,13 +86,13 @@ var Mesh = {
         	shaderProgram.textureCoordAttribute, 
         	this.vertexTextureCoordBuffer.itemSize, 
         	gl.FLOAT, false, 0, 0);
-        /*  //DISABLED FOR NOW
+        // /*  //DISABLED FOR NOW
         gl.bindBuffer(gl.ARRAY_BUFFER, this.vertexNormalBuffer);
         gl.vertexAttribPointer(
         	shaderProgram.vertexNormalAttribute, 
         	this.vertexNormalBuffer.itemSize, 
         	gl.FLOAT, false, 0, 0);
-		*/ 
+		// */ 
 
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.vertexIndexBuffer);
 

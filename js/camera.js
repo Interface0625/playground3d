@@ -163,20 +163,14 @@ var Camera = {
 
         if (Camera.speed != 0 || Camera.strafeSpeed != 0 || Camera.UpDownSpeed != 0) {
             // foreward/backward
-            Camera.position.X += Math.sin(degToRad(Camera.yaw)) * Camera.speed * elapsed * Camera.speedMod;
-            Camera.position.Z += Math.cos(degToRad(Camera.yaw)) * Camera.speed * elapsed * Camera.speedMod;
-            
-            // strafe
-            //Camera.position.X += Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
-            //Camera.position.Z += Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed * elapsed * Camera.speedMod;
-            
-            // Height control
+            Camera.position.X += (Math.sin(degToRad(Camera.yaw)) * Camera.speed + Math.sin(degToRad(Camera.yaw+90)) * Camera.strafeSpeed) / 2 * elapsed * Camera.speedMod;
+            Camera.position.Z += (Math.cos(degToRad(Camera.yaw)) * Camera.speed + Math.cos(degToRad(Camera.yaw+90)) * Camera.strafeSpeed) / 2 * elapsed * Camera.speedMod;
             Camera.position.Y += Math.sin(degToRad(-Camera.pitch)) * Camera.speed * elapsed * Camera.speedMod;
         }
 
-
         Camera.yaw += Camera.yawRate * elapsed;
         Camera.pitch += Camera.pitchRate * elapsed;
+
         if(Camera.pitch > 85){ 
             Camera.pitch = 85; 
         }else if(Camera.pitch < -85){

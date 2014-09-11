@@ -2,22 +2,23 @@
 
 
 var shader_fs_src = "";
-shader_fs_src += "precision mediump float;";
-shader_fs_src += "varying vec2 vTextureCoord;";
-shader_fs_src += "uniform sampler2D uSampler;";
-shader_fs_src += "void main(void) {";
+shader_fs_src += "precision mediump float;\n";
+shader_fs_src += "varying vec2 vTextureCoord;\n";
+shader_fs_src += "uniform sampler2D uSampler;\n";
+shader_fs_src += "void main(void) {\n";
 shader_fs_src += "  gl_FragColor = texture2D(uSampler, vec2(vTextureCoord.s, vTextureCoord.t));";
 shader_fs_src += "}";
 
 var shader_vs_src = "";
-shader_vs_src += "attribute vec3 aVertexPosition;";
-shader_vs_src += "attribute vec2 aTextureCoord;";
-shader_vs_src += "uniform mat4 uMVMatrix;";
-shader_vs_src += "uniform mat4 uPMatrix;";
-shader_vs_src += "varying vec2 vTextureCoord;";
-shader_vs_src += "void main(void) {";
-shader_vs_src += "  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);";
-shader_vs_src += "  vTextureCoord = aTextureCoord;";
+shader_vs_src += "attribute vec3 aVertexPosition;\n";
+shader_vs_src += "attribute vec2 aTextureCoord;\n";
+shader_vs_src += "attribute vec3 aNormal;\n";
+shader_vs_src += "uniform mat4 uMVMatrix;\n";
+shader_vs_src += "uniform mat4 uPMatrix;\n";
+shader_vs_src += "varying vec2 vTextureCoord;\n";
+shader_vs_src += "void main(void) {\n";
+shader_vs_src += "  gl_Position = uPMatrix * uMVMatrix * vec4(aVertexPosition, 1.0);\n";
+shader_vs_src += "  vTextureCoord = aTextureCoord;\n";
 shader_vs_src += "}";
 
 function getShader(gl, src, type) {
@@ -64,6 +65,9 @@ function initShaders(gl) {
 
     shaderProgram.textureCoordAttribute = gl.getAttribLocation(shaderProgram, "aTextureCoord");
     gl.enableVertexAttribArray(shaderProgram.textureCoordAttribute);
+
+    shaderProgram.vertexNormalAttribute = gl.getAttribLocation(shaderProgram, "aNormal");
+    gl.enableVertexAttribArray(shaderProgram.vertexNormalAttribute);
 
     shaderProgram.pMatrixUniform = gl.getUniformLocation(shaderProgram, "uPMatrix");
     shaderProgram.mvMatrixUniform = gl.getUniformLocation(shaderProgram, "uMVMatrix");

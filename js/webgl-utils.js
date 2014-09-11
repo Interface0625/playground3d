@@ -61,6 +61,8 @@ function initGL(canvas) {
         gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         gl.viewportWidth = canvas.width;
         gl.viewportHeight = canvas.height;
+        gl.clearColor(0.3, 0.3, 0.3, 1.0);
+        gl.enable(gl.DEPTH_TEST);
     } catch (e) {
     }
     if (!gl) {
