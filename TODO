@@ -1,0 +1,21 @@
+General TODO:
+
+* Picking (line-triangle(/bbox, bspheare) intersect)
+* Gravity experiments
+* Collision detection + walk on plane.
+* Clean Camera implementation
+* Model / Mesh loading
+* Content object - knows how to load any resource.
+* Simple shaders
+	- Basics - points and lines
+	- position, color
+	- position, texture
+	- position, texture, normal + simple lights
+	- position, texture, normal + lights, shadows
+* Renderer object - containing, shaders, lights, meshes (current scene)
+
+
+
+
+
+
